@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">NewsAggregator</string>
+    <string name="news_tab_news">News</string>
+    <string name="news_tab_opinion">Opinion</string>
+    <string name="news_tab_sport">Sport</string>
+    <string name="news_tab_culture">Culture</string>
+    <string name="news_tab_lifestyle">Lifestyle</string>
 </resources>
