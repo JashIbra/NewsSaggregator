@@ -9,6 +9,7 @@ import com.newsaggregator.newsfeed.usecase.GetNewsFeedUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -21,7 +22,11 @@ class NewsFeedViewModel : ViewModel() {
     val state: StateFlow<NewsFeedState> = _state.asStateFlow()
 
     init {
-        setIndex(0)
+        _state.onEach {
+            _state.update {
+                it.copy(rssModel = getNewsFeedUseCase(it.newsType))
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun onNewsDetailScreenLoading() {
@@ -37,6 +42,7 @@ class NewsFeedViewModel : ViewModel() {
     }
 
     fun setIndex(categoryNum: Int) {
+        if (state.value.categoryNum == categoryNum) return
         val newsType = NewsFeedType.entries[categoryNum]
         _state.update {
             it.copy(

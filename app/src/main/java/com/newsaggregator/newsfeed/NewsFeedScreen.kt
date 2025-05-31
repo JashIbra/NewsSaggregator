@@ -1,16 +1,23 @@
 package com.newsaggregator.newsfeed
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
@@ -18,15 +25,19 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -68,15 +79,16 @@ fun NewsFeedScreen(
                         horizontalArrangement = Arrangement.End
                     ) {
                         Text(
-                            text = "The\nGuardian",
+                            text = "     The\nGuardian",
                             color = Color.White,
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.padding(8.dp),
-                            textAlign = TextAlign.Center
+                            style = MaterialTheme.typography.displayMedium,
+                            modifier = Modifier.padding(end = 8.dp),
+                            textAlign = TextAlign.Start,
+                            lineHeight = TextUnit(28f, TextUnitType.Sp)
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(Color.Blue),
+                colors = TopAppBarDefaults.topAppBarColors(Color(0xFF052962)),
             )
         },
     ) { paddingValues ->
@@ -87,31 +99,58 @@ fun NewsFeedScreen(
         ) {
             ScrollableTabRow(
                 selectedTabIndex = state.categoryNum,
-                containerColor = Color.Blue,
+                containerColor = Color(0xFF052962),
                 contentColor = Color.White,
                 edgePadding = 0.dp
             ) {
                 tabs.forEachIndexed { index, newsFeedType ->
-                    Tab(
-                        selected = state.categoryNum == index,
-                        onClick = {
-                            scope.launch {
-                                pagerState.animateScrollToPage(index)
-                            }
-                            viewModel.setIndex(index)
-                        },
-                        text = {
-                            Text(
-                                text = newsFeedType.name,
-                                color = if (state.categoryNum == index) Color.Red else Color.White,
-                                style = MaterialTheme.typography.bodyMedium
+                    Box(
+                        modifier = Modifier
+                            .height(48.dp)
+                            .wrapContentWidth(),
+                        contentAlignment = Alignment.TopCenter
+                    ) {
+                        Tab(
+                            selected = state.categoryNum == index,
+                            onClick = {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
+                                viewModel.setIndex(index)
+                            },
+                            text = {
+                                Text(
+                                    text = newsFeedType.name,
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Justify,
+                                )
+                            },
+                            selectedContentColor = Color.Red,
+                            unselectedContentColor = Color.White,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                        if (index != tabs.lastIndex) {
+                            VerticalDivider(
+                                color = Color.White.copy(alpha = 0.3f),
+                                thickness = 0.5.dp,
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .padding(top = 8.dp)
+                                    .align(Alignment.CenterEnd)
                             )
-                        },
-                        selectedContentColor = Color.Red,
-                        unselectedContentColor = Color.White
-                    )
+                        }
+                    }
                 }
             }
+            HorizontalDivider(
+                color = Color.White.copy(alpha = 0.3f),
+                thickness = 0.5.dp,
+                modifier = Modifier
+                    .background(Color(0xFF052962))
+                    .padding(bottom = 8.dp)
+                    .fillMaxWidth()
+            )
 
             HorizontalPager(
                 state = pagerState,
